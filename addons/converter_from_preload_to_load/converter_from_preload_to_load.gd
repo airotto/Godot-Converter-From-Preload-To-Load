@@ -98,7 +98,7 @@ func initialized() -> void:
 	script_editor.editor_script_changed.connect(update_code_edits.bind(script_editor).unbind(1))
 	update_code_edits(script_editor)
 
-const EditorHelpBitToolTipHelper = preload( "uid://8nx3oo2048ro")
+const EditorHelpBitToolTipHelper = preload("uid://8nx3oo2048ro")
 const _ACTION_RESOURCE_META:String = "resource"
 const _ACTION_SCENE_META:String = "scene"
 
@@ -217,7 +217,29 @@ func _action_scene(symbol: String, line: int, column: int, code_edit:CodeEdit, t
 	var scene:PackedScene = load(path)
 	var scene_root_type:StringName = scene.get_state().get_node_type(0)
 	
-	var convert:String = "var " + property_name + ":" + scene_root_type + " = (load(\"" + path + "\") as " + _get_type(path) + ").instantiate()"
+	
+	##カスタムタイプ-------------
+	var script_type_syntax:String = ""
+	for i in scene.get_state().get_node_property_count(0):
+		if scene.get_state().get_node_property_name(0, i) == "script":
+			var script:Script = scene.get_state().get_node_property_value(0, i)
+			
+			if script.is_built_in():
+				break
+			
+			var script_type_name:String
+			if script.get_global_name():
+				script_type_name = script.get_global_name()
+			else:
+				script_type_name = script.resource_path.get_file().get_basename().to_pascal_case()
+				script_type_syntax = "const " + script_type_name + " = preload(\"" + script.resource_path + "\")\n"
+			
+			scene_root_type = script_type_name
+			break
+	##------------------------
+	
+	
+	var convert:String = script_type_syntax + "var " + property_name + ":" + scene_root_type + " = (load(\"" + path + "\") as " + _get_type(path) + ").instantiate()"
 	
 	code_edit.remove_text(line, regex_match.get_start(), line, regex_match.get_end())
 	code_edit.insert_text(convert, line, regex_match.get_start())
