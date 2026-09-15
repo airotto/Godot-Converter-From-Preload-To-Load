@@ -233,6 +233,16 @@ func _action_scene(symbol: String, line: int, column: int, code_edit:CodeEdit, t
 			else:
 				script_type_name = script.resource_path.get_file().get_basename().to_pascal_case()
 				script_type_syntax = "const " + script_type_name + " = preload(\"" + script.resource_path + "\")\n"
+				
+				var indent:String
+				for j in text:
+					if j == " " or j == "	":
+						indent += j
+					else:
+						break
+				
+				script_type_syntax += indent
+				
 			
 			scene_root_type = script_type_name
 			break
