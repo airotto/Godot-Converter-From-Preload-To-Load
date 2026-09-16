@@ -72,7 +72,7 @@ func _get_type(resource_path:String) -> String:
 
 
 func _get_action_text_for_resource() -> String:
-	match TranslationServer.get_locale():
+	match TranslationServer.get_tool_locale():
 		"ja":
 			return "リソースとしてpreloadからloadに変換"
 		_:
@@ -80,7 +80,7 @@ func _get_action_text_for_resource() -> String:
 	return "Error text"
 
 func _get_action_text_for_scene() -> String:
-	match TranslationServer.get_locale():
+	match TranslationServer.get_tool_locale():
 		"ja":
 			return "シーンとしてpreloadからloadに変換"
 		_:
